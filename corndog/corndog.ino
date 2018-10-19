@@ -18,6 +18,8 @@ int readyButtonPin = 4;
 int readyButtonValue = LOW;
 // Whether or not it is ready for next launch
 int readyForLaunch = LOW;
+// Whether or not the launcher is currently resetting
+int hasBeenReset = LOW;
 
 // Status Light pin
 int statusLightPinRed = 9;
@@ -25,7 +27,7 @@ int statusLightPinGreen = 10;
 int statusLightPinBlue = 11;
 
 // Servo
-int servoPin = A0;
+int servoPin = 6;
 Servo servo;
 
 void setup()
@@ -43,8 +45,12 @@ void setup()
 
 	// Motion Sensor
 	servo.attach(servoPin);
+ servo.write(0);
 
 	Serial.begin(9600);
+ 
+  Serial.print(millis());
+  Serial.println(" Starting...");
 }
 
 void loop()
@@ -78,7 +84,7 @@ void readyStateRefresh()
 {
 	readyButtonValue = digitalRead(readyButtonPin);
 
-	if (readyButtonValue == HIGH)
+	if (readyButtonValue == HIGH && hasBeenReset == LOW)
 	{
 		reset();
 	}
@@ -101,18 +107,23 @@ void statusLightRefresh()
 void launch()
 {
 	// TODO: Make launching system using motor
-	Serial.println("Launch facehugger!");
+  Serial.print(millis());
+	Serial.println(" Launch facehugger!");
 
-	servo.write(180);
+	servo.write(90);
 
 	readyForLaunch = LOW;
+  hasBeenReset = LOW;
 }
 
 // Reset properties so everything is ready for launch
 void reset()
 {
+  Serial.print(millis());
+  Serial.println(" Reset launcher.");
 	servo.write(0);
 	readyForLaunch = HIGH;
+  hasBeenReset = HIGH;
 }
 
 // Set Color Utility
