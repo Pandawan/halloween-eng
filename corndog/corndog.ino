@@ -65,6 +65,11 @@ void motionSensorRefresh()
 {
 	// Refresh the Motion Sensor Value
 	motionSensorValue = digitalRead(motionSensorPin);
+ 
+  Serial.print(millis());
+  Serial.print(" Motion Reading ");
+  Serial.println(motionSensorValue);
+  
 	// If it is ready for launch
 	if (readyForLaunch == HIGH)
 	{
@@ -84,6 +89,12 @@ void readyStateRefresh()
 {
 	readyButtonValue = digitalRead(readyButtonPin);
 
+
+  Serial.print(millis());
+  Serial.print(" Button Reading ");
+  Serial.println(motionSensorValue);
+  
+
 	if (readyButtonValue == HIGH && hasBeenReset == LOW)
 	{
 		reset();
@@ -93,13 +104,19 @@ void readyStateRefresh()
 // Refresh the light color
 void statusLightRefresh()
 {
+
+  Serial.print(millis());
+  Serial.print(" Light Reading ");
+  Serial.println(motionSensorValue);
+  
+  
 	if (readyForLaunch == LOW)
 	{
-		setColor(statusLightPinRed, 255, statusLightPinGreen, 0, statusLightPinBlue, 0);
+		setColor(statusLightPinRed, 128, statusLightPinGreen, 0, statusLightPinBlue, 0);
 	}
 	else if (readyForLaunch == HIGH)
 	{
-		setColor(statusLightPinRed, 0, statusLightPinGreen, 255, statusLightPinBlue, 0);
+		setColor(statusLightPinRed, 0, statusLightPinGreen, 128, statusLightPinBlue, 0);
 	}
 }
 
