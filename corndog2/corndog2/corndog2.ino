@@ -1,7 +1,9 @@
+#include <Servo.h>
+
 /**
- * PROJECT CORNDOG v2.0
- * IT'S STILL NOT A FRUIT.
- */
+   PROJECT CORNDOG v2.0
+   IT'S STILL NOT A FRUIT.
+*/
 
 
 /* Motion Sensor */
@@ -17,7 +19,7 @@ const int readyLightRedPin = 9;
 const int readyLightGreenPin = 10;
 const int readyLightBluePin = 11;
 // Number between 0 and 255 for brightness of the ready light
-const int readyLightBrightness = 16; 
+const int readyLightBrightness = 255;
 
 /* Reset Button */
 // Pin for the Reset Button
@@ -25,13 +27,17 @@ const int resetButtonPin = 4;
 // Current value of the Reset Button
 int resetButtonValue = LOW;
 
+/* Servo Motor */
+Servo servoMotor;
+int servoMotorPin = 7;
+
 /* Extra Variables */
 // Whether or not the system is ready to be launched
 int readyForLaunch = LOW;
 
 
- void setup() {
-  
+void setup() {
+
   Serial.begin(9600);
   printMessage("Initializing...", true);
 
@@ -48,17 +54,20 @@ int readyForLaunch = LOW;
   // Declare Ready Blue Pin as an Output
   pinMode(readyLightBluePin, OUTPUT);
 
-  reset();
-  
-  printMessage("Done initializing.", true);
- }
+  // Declare Servo's Motor Pin as Servo
+  servoMotor.attach(servoMotorPin);
 
- void loop(){
+  reset();
+
+  printMessage("Done initializing.", true);
+}
+
+void loop() {
   /* Motion Sensor Sequence */
   // Motion Sensor needs to run before reset button so that the servo motor doesn't run while pressing reset button
-  motionSensorValue = digitalRead(motionSensorPin);  
+  motionSensorValue = digitalRead(motionSensorPin);
 
-  
+
   /* Reset Button Sequence */
   // Read reset button's value
   resetButtonValue = digitalRead(resetButtonPin);
@@ -70,7 +79,7 @@ int readyForLaunch = LOW;
   }
 
 
-  /* Ready Light Sequence */
+  /* Ready Light Sequence */  
   // Ready For Launch
   if (readyForLaunch == HIGH) {
     // Ready Light Green
@@ -88,33 +97,38 @@ int readyForLaunch = LOW;
   if (readyForLaunch == HIGH && motionSensorValue == HIGH) {
     launch();
   }
-  
+
 
   /* End Sequence */
   previousMotionSensorValue = motionSensorValue;
- }
+}
 
- void reset() {
+void reset() {
   printMessage("Resetting.", true);
   readyForLaunch = HIGH;
+  servoMotor.write(0);
+  delay(1000);
+  readyForLaunch = HIGH;
   printMessage("Done resetting.", true);
- }
+}
 
 void launch() {
   printMessage("Launching.", true);
+  readyForLaunch = LOW;
   // TODO: Make launching sequence
-  // TODO: Add Servo system
+  servoMotor.write(180);
+  delay(1000);
   readyForLaunch = LOW;
   printMessage("Done launching.", true);
 }
 
 
 /*
- * HELPER METHODS
- */
+   HELPER METHODS
+*/
 
 // Print Message Utility
-void printMessage(char* stringToPrint, bool newLine){
+void printMessage(char* stringToPrint, bool newLine) {
   Serial.print(millis());
   Serial.print(" ");
   if (newLine) {
@@ -126,7 +140,7 @@ void printMessage(char* stringToPrint, bool newLine){
 }
 
 // Print Message Utility
-void printMessage(int numberToPrint, bool newLine){
+void printMessage(int numberToPrint, bool newLine) {
   Serial.print(millis());
   Serial.print(" ");
   if (newLine) {
@@ -140,11 +154,7 @@ void printMessage(int numberToPrint, bool newLine){
 // Set Ready Light's Color Utility
 void setReadyLightColor(int red, int green, int blue)
 {
-#ifdef COMMON_ANODE
-  red = 255 - red;
-  green = 255 - green;
-  blue = 255 - blue;
-#endif
+  printMessage(red, true);
   analogWrite(readyLightRedPin, red);
   analogWrite(readyLightGreenPin, green);
   analogWrite(readyLightBluePin, blue);
