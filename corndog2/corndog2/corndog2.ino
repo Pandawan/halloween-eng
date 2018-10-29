@@ -29,7 +29,7 @@ int resetButtonValue = LOW;
 
 /* Servo Motor */
 Servo servoMotor;
-int servoMotorPin = 7;
+int servoMotorPin = 3;
 
 /* Extra Variables */
 // Whether or not the system is ready to be launched
